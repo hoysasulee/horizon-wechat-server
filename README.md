@@ -71,7 +71,7 @@ But Horizon is not just another summarizer. AI is great at reducing noise, but n
 
 ## Features
 
-- **📡 Watch Your Own Sources** — Track Hacker News, RSS, Reddit, Telegram, and GitHub releases or user activity in one pipeline
+- **📡 Watch Your Own Sources** — Track Hacker News, RSS, Reddit, Telegram, Twitter/X, and GitHub releases or user activity in one pipeline
 - **🤖 Turn Noise Into a Reading List** — Score each item from 0-10 with Claude, GPT, Gemini, DeepSeek, Doubao, MiniMax, or any OpenAI-compatible API
 - **🔗 Merge Repeated Stories** — Deduplicate the same story across platforms before it reaches your briefing
 - **🔍 Understand the Background** — Add web-researched context for unfamiliar concepts, companies, projects, and technical terms
@@ -112,6 +112,7 @@ flowchart LR
         hn["📰 Hacker News"]
         reddit["💬 Reddit"]
         telegram["✈️ Telegram"]
+        twitter["🐦 Twitter / X"]
         github["🐙 GitHub"]
     end
 
@@ -134,6 +135,7 @@ flowchart LR
     hn --> fetch
     reddit --> fetch
     telegram --> fetch
+    twitter --> fetch
     github --> fetch
 
     fetch --> dedup --> score --> enrich --> summary
@@ -147,7 +149,7 @@ flowchart LR
     summary --> mcp
 
     class config config
-    class rss,hn,reddit,telegram,github source
+    class rss,hn,reddit,telegram,twitter,github source
     class fetch,dedup,score,enrich,summary process
     class site,email,webhook,mcp output
 ```
@@ -264,6 +266,7 @@ Horizon works great as a **GitHub Actions** cron job. See [`.github/workflows/da
 | **RSS / Atom** | Any RSS or Atom feed | — |
 | **Reddit** | Subreddits + user posts | Yes (top N comments) |
 | **Telegram** | Public channel messages | — |
+| **Twitter / X** | Tweets from specific users | Yes (top N replies) |
 | **GitHub** | User events & repo releases | — |
 
 ## Where Your Briefing Goes
