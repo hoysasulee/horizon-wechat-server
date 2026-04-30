@@ -13,6 +13,7 @@ class SourceType(str, Enum):
     RSS = "rss"
     REDDIT = "reddit"
     TELEGRAM = "telegram"
+    TWITTER = "twitter"
 
 
 class ContentItem(BaseModel):
@@ -124,6 +125,19 @@ class TelegramConfig(BaseModel):
     channels: List[TelegramChannelConfig] = Field(default_factory=list)
 
 
+class TwitterConfig(BaseModel):
+    """Twitter source configuration via Apify."""
+    enabled: bool = True
+    apify_token_env: str = "APIFY_TOKEN"
+    actor_id: str = "altimis~scweet"
+    users: List[str] = Field(default_factory=list)
+    fetch_limit: int = 10
+    fetch_reply_text: bool = False
+    max_replies_per_tweet: int = 3
+    max_tweets_to_expand: int = 10
+    reply_min_likes: int = 0
+
+
 class SourcesConfig(BaseModel):
     """All sources configuration."""
 
@@ -132,6 +146,7 @@ class SourcesConfig(BaseModel):
     rss: List[RSSSourceConfig] = Field(default_factory=list)
     reddit: RedditConfig = Field(default_factory=RedditConfig)
     telegram: TelegramConfig = Field(default_factory=TelegramConfig)
+    twitter: Optional[TwitterConfig] = None
 
 
 class WebhookConfig(BaseModel):

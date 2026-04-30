@@ -17,6 +17,7 @@ from .scrapers.hackernews import HackerNewsScraper
 from .scrapers.rss import RSSScraper
 from .scrapers.reddit import RedditScraper
 from .scrapers.telegram import TelegramScraper
+from .scrapers.twitter import TwitterScraper
 from .ai.client import create_ai_client
 from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
@@ -102,6 +103,9 @@ class HorizonOrchestrator:
                     f"→ {len(deduped_items)} unique items\n"
                 )
             important_items = deduped_items
+
+            # 5.6 Optional second-stage Twitter reply expansion + targeted re-analysis
+            await self._expand_twitter_discussion(important_items)
 
             # Show per-sub-source selection breakdown
             selected_counts: Dict[str, int] = defaultdict(int)
@@ -252,6 +256,11 @@ class HorizonOrchestrator:
             if self.config.sources.telegram.enabled:
                 telegram_scraper = TelegramScraper(self.config.sources.telegram, client)
                 tasks.append(self._fetch_with_progress("Telegram", telegram_scraper, since))
+
+            # Twitter
+            if self.config.sources.twitter and self.config.sources.twitter.enabled:
+                twitter_scraper = TwitterScraper(self.config.sources.twitter, client)
+                tasks.append(self._fetch_with_progress("Twitter", twitter_scraper, since))
 
             # Fetch all concurrently
             results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -433,6 +442,56 @@ class HorizonOrchestrator:
                 drop_indices.add(dup_idx)
 
         return [item for i, item in enumerate(items) if i not in drop_indices]
+
+    async def _expand_twitter_discussion(self, items: List[ContentItem]) -> None:
+        """Second-stage: fetch reply text for important Twitter items and re-analyze.
+
+        Only runs when sources.twitter.fetch_reply_text is True.
+        Bounded by max_tweets_to_expand to control cost.
+        """
+        tw_cfg = self.config.sources.twitter
+        if not tw_cfg or not tw_cfg.enabled or not tw_cfg.fetch_reply_text:
+            return
+
+        from .models import SourceType
+
+        twitter_items = [
+            item for item in items
+            if item.source_type == SourceType.TWITTER
+        ][:tw_cfg.max_tweets_to_expand]
+
+        if not twitter_items:
+            return
+
+        self.console.print(
+            f"💬 Fetching reply text for {len(twitter_items)} Twitter items..."
+        )
+
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            scraper = TwitterScraper(tw_cfg, client)
+            expanded = []
+            for item in twitter_items:
+                try:
+                    reply_lines = await scraper.fetch_replies_for_item(item)
+                    if TwitterScraper.append_discussion_content(item, reply_lines):
+                        expanded.append(item)
+                        self.console.print(
+                            f"   💬 {len(reply_lines)} replies added to: {item.title[:60]}"
+                        )
+                except Exception as exc:
+                    self.console.print(
+                        f"   [yellow]⚠️  Reply fetch failed for {item.id}: {exc}[/yellow]"
+                    )
+
+        if not expanded:
+            return
+
+        self.console.print(
+            f"   Re-analyzing {len(expanded)} Twitter items with reply context...\n"
+        )
+        ai_client = create_ai_client(self.config.ai)
+        analyzer = ContentAnalyzer(ai_client)
+        await analyzer.analyze_batch(expanded)
 
     async def _enrich_important_items(self, items: List[ContentItem]) -> None:
         """Enrich items with background knowledge (2nd AI pass).
