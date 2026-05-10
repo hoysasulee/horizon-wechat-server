@@ -53,7 +53,13 @@ class ContentAnalyzer:
                     await self._analyze_item(item)
                     analyzed_items.append(item)
                 except Exception as e:
-                    print(f"Error analyzing item {item.id}: {e}")
+                    inner = e
+                    try:
+                        if hasattr(e, "last_attempt"):
+                            inner = e.last_attempt.exception() or e
+                    except Exception:
+                        pass
+                    print(f"Error analyzing item {item.id}: {type(inner).__name__}: {inner}")
                     item.ai_score = 0.0
                     item.ai_reason = "Analysis failed"
                     item.ai_summary = item.title
