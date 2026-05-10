@@ -88,6 +88,24 @@ class HorizonOrchestrator:
             analyzed_items = await self._analyze_content(merged_items)
             self.console.print(f"🤖 Analyzed {len(analyzed_items)} items with AI\n")
 
+            # 4.5 Score audit: print top-20 scored items so we can tune the threshold
+            #    by reading workflow logs (not gated on filtering).
+            sorted_for_audit = sorted(
+                analyzed_items, key=lambda x: x.ai_score or 0, reverse=True
+            )
+            if sorted_for_audit:
+                self.console.print("📊 Score audit (top 20 by ai_score):")
+                for it in sorted_for_audit[:20]:
+                    sc = it.ai_score if it.ai_score is not None else 0.0
+                    src = it.source_type.value
+                    title = it.title if len(it.title) <= 70 else it.title[:67] + "…"
+                    reason = (it.ai_reason or "").replace("\n", " ")
+                    reason = reason if len(reason) <= 100 else reason[:97] + "…"
+                    self.console.print(f"   {sc:>4.1f} [{src}] {title}")
+                    if reason:
+                        self.console.print(f"        ↳ {reason}")
+                self.console.print("")
+
             # 5. Filter by score threshold
             threshold = self.config.filtering.ai_score_threshold
             important_items = [
