@@ -34,7 +34,7 @@ jobs:
           # Server酱 完整推送 URL,例如:
           #   https://sctapi.ftqq.com/SCTxxxxxxxxxxxxxx.send
           SCT_PUSH_URL: ${{ secrets.SCT_PUSH_URL }}
-        run: uv run horizon --hours 24
+        run: uv run horizon --hours 48
 
       - name: Set current date as environment variable
         run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
