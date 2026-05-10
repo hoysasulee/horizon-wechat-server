@@ -25,6 +25,8 @@ LABELS = {
         "discussion": "Discussion",
         "references": "References",
         "tags": "Tags",
+        "subhead_picked": "From {total} items, {n} important content pieces were selected",
+        "subhead_empty": "Analyzed {total} items, but none met the importance threshold.",
         "empty_body": (
             "No significant developments today. This might indicate:\n"
             "- A quiet day in your tracked sources\n"
@@ -43,6 +45,8 @@ LABELS = {
         "discussion": "社区讨论",
         "references": "参考链接",
         "tags": "标签",
+        "subhead_picked": "今日筛选 {n} 条重要资讯（共扫描 {total} 条）",
+        "subhead_empty": "今日扫描 {total} 条，无达到重要性阈值的内容。",
         "empty_body": (
             "今日暂无重要动态，可能原因：\n"
             "- 今天关注的信息源较平静\n"
@@ -90,11 +94,11 @@ class DailySummarizer:
 
         header = (
             f"# {labels['header']} - {date}\n\n"
-            f"> From {total_fetched} items, {len(items)} important content pieces were selected\n\n"
+            f"> {labels['subhead_picked'].format(total=total_fetched, n=len(items))}\n\n"
             "---\n\n"
         )
 
-        # TOC
+        # TOC \u2014 link directly to article URL so taps in WeChat actually open the source
         toc_entries = []
         for i, item in enumerate(items):
             _t = item.metadata.get(f"title_{language}") or item.title
@@ -102,7 +106,7 @@ class DailySummarizer:
             if language == "zh":
                 t = _pangu(t)
             score = item.ai_score or "?"
-            toc_entries.append(f"{i + 1}. [{t}](#item-{i + 1}) \u2b50\ufe0f {score}/10")
+            toc_entries.append(f"{i + 1}. [{t}]({item.url}) \u2b50\ufe0f {score}/10")
         toc = "\n".join(toc_entries) + "\n\n---\n\n"
 
         parts = [self._format_item(item, labels, language, i + 1) for i, item in enumerate(items)]
@@ -242,6 +246,6 @@ class DailySummarizer:
         """Generate summary when no high-scoring items were found."""
         return (
             f"# {labels['header']} - {date}\n\n"
-            f"> Analyzed {total_fetched} items, but none met the importance threshold.\n\n"
+            f"> {labels['subhead_empty'].format(total=total_fetched)}\n\n"
             + labels["empty_body"]
         )
