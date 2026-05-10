@@ -53,31 +53,31 @@
       {
         "name": "36氪快讯",
         "url": "https://rsshub.app/36kr/newsflashes",
-        "enabled": true,
+        "enabled": false,
         "category": "tech-news"
       },
       {
         "name": "36氪首页",
         "url": "https://rsshub.app/36kr/news/latest",
-        "enabled": true,
+        "enabled": false,
         "category": "tech-news"
       },
       {
         "name": "虎嗅",
         "url": "https://rsshub.app/huxiu/article",
-        "enabled": true,
+        "enabled": false,
         "category": "tech-news"
       },
       {
         "name": "华尔街见闻 - 全球资讯",
         "url": "https://rsshub.app/wallstreetcn/news/global",
-        "enabled": true,
+        "enabled": false,
         "category": "finance-news"
       },
       {
         "name": "财联社电报",
         "url": "https://rsshub.app/cls/telegraph",
-        "enabled": true,
+        "enabled": false,
         "category": "finance-flash"
       },
       {
