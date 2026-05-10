@@ -51,40 +51,40 @@
         "category": "tech-product"
       },
       {
-        "name": "36氪快讯",
-        "url": "https://rsshub.app/36kr/newsflashes",
-        "enabled": false,
-        "category": "tech-news"
+        "name": "36氪",
+        "url": "https://www.36kr.com/feed",
+        "enabled": true,
+        "category": "tech-finance"
       },
       {
-        "name": "36氪首页",
-        "url": "https://rsshub.app/36kr/news/latest",
-        "enabled": false,
-        "category": "tech-news"
+        "name": "钛媒体",
+        "url": "https://www.tmtpost.com/rss.xml",
+        "enabled": true,
+        "category": "tech-finance"
       },
       {
-        "name": "虎嗅",
-        "url": "https://rsshub.app/huxiu/article",
-        "enabled": false,
-        "category": "tech-news"
+        "name": "InfoQ 中国",
+        "url": "https://www.infoq.cn/feed.xml",
+        "enabled": true,
+        "category": "tech-engineering"
       },
       {
-        "name": "华尔街见闻 - 全球资讯",
-        "url": "https://rsshub.app/wallstreetcn/news/global",
-        "enabled": false,
-        "category": "finance-news"
+        "name": "极客公园",
+        "url": "https://www.geekpark.net/rss",
+        "enabled": true,
+        "category": "tech-product"
       },
       {
-        "name": "财联社电报",
-        "url": "https://rsshub.app/cls/telegraph",
-        "enabled": false,
-        "category": "finance-flash"
+        "name": "爱范儿",
+        "url": "https://www.ifanr.com/feed",
+        "enabled": true,
+        "category": "tech-product"
       },
       {
-        "name": "阿尔法工场",
-        "url": "https://rsshub.app/alphaworks",
-        "enabled": false,
-        "category": "finance-analysis"
+        "name": "HelloGitHub",
+        "url": "https://hellogithub.com/rss",
+        "enabled": true,
+        "category": "tech-engineering"
       }
     ],
     "reddit": {
